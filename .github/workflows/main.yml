@@ -19,7 +19,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          arn: arn:aws:lambda:us-east-1:040205470579:function:Lamda-hello-world
+  
       - name: npm install
               npm run build --if-present
         env:
@@ -30,4 +30,4 @@ jobs:
         run: |
           npx ncc build index.ts
           zip -j deploy.zip ./dist/*
-          aws lambda update-function-code --function-name=Lambda-hello-world --zip-file=fileb://deploy.zip
+          aws lambda update-function-code --function-name=Lamda-hello-world --zip-file=fileb://deploy.zip
