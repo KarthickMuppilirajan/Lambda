@@ -1,17 +1,18 @@
 name: Test Run
 on:
   push
-jobs:
-  lambda:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - run: echo "THIS IS A TEST PACKAGE" > file.txt
-      - run: zip lambda.zip file.txt
-      - uses: stcalica/update-lambda
-        with:
-          package: lambda.zip
-          function-name: TEST-FUNCTION
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_SECRET_ID: ${{ secrets.AWS_SECRET_ID }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+  
+- name: AWS Lambda Deploy
+      uses: 
+      with:
+            function_name: Helloworld
+            zip_file: Helloworld.zip
+            
+- name: Configure AWS credentials from Production account
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        runtime: Node.js 14.x
+        
