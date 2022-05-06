@@ -1,27 +1,32 @@
-name: CI/CD Pipeline
+name: Deploy
 
 on:
   push:
-    branches: [ main ]
-
+    branches:
+    - master
 
 jobs:
-
-  continuous-integration:
+  deploy_lambda:
     runs-on: ubuntu-latest
-  
-- name: AWS Lambda Deploy
-      uses: actions/checkout@v2
-      with:
-            function_name: Helloworld
-            zip_file: Helloworld.zip
-            architecture: x86_64
-            
-- name: Configure AWS credentials from secrets
-      uses: 
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_Region }}
-        runtime: Node.js 14.x
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: npm install
+        env:
+          CI: true
+        run: |
+          npm ci
+      - name: deploy
+        run: |
+          npx ncc build index.ts
+          zip -j deploy.zip ./dist/*
+          aws lambda update-function-code --function-name=lambda-gh-action --zip-file=fileb://deploy.zip
         
